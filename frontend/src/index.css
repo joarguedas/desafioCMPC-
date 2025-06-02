@@ -1,0 +1,55 @@
+/* Reset básico */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Ocupa toda la pantalla */
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+/* Fuente global */
+body {
+  font-family: 'Roboto', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  background-color: #f4f6f8;
+  color: #212121;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Enlaces */
+a {
+  color: #1976d2;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+/* Botones (opcionales, ya que MUI los estiliza también) */
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* Títulos por defecto */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  color: #212121;
+}
+
+/* Ajustes responsivos */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #121212;
+    color: #f5f5f5;
+  }
+
+  a {
+    color: #90caf9;
+  }
+}

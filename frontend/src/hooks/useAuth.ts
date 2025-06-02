@@ -1,0 +1,81 @@
+import { useEffect, useState } from 'react';
+import api from '../lib/axios';
+
+interface LoginPayload {
+  email: string;
+  password: string;
+}
+
+interface User {
+  id: number;
+  email: string;
+  role: string;
+}
+
+export function useAuth() {
+  const [user, setUser] = useState<User | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Recuperar datos desde localStorage al iniciar
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const userStr = localStorage.getItem('user');
+
+    if (token && userStr) {
+      setUser(JSON.parse(userStr));
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  const login = async ({ email, password }: LoginPayload): Promise<{ success: boolean; error?: string }> => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await api.post('/auth/login', { email, password });
+      const { accessToken, user }: { accessToken: string; user: User } = response.data;
+
+      localStorage.setItem('token', accessToken);
+      localStorage.setItem('user', JSON.stringify(user));
+
+      setUser(user);
+      setIsAuthenticated(true);
+
+      return { success: true };
+    } catch (err: any) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      setUser(null);
+      setIsAuthenticated(false);
+
+      const message =
+        err?.response?.data?.message ||
+        (err?.response?.status === 401
+          ? 'Credenciales incorrectas'
+          : 'Error al intentar iniciar sesión');
+
+      setError(message);
+      return { success: false, error: message };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+    setIsAuthenticated(false);
+  };
+
+  return {
+    login,
+    logout,
+    user,
+    isAuthenticated,
+    loading,
+    error,
+  };
+}
